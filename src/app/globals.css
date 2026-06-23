@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0b1020;
+  --fg: #e9ecf5;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ───────────────────────────────────────────
+   슬라이드 인쇄(PDF 저장) — Ctrl/⌘+P
+   슬라이드별로 한 페이지씩 분할된다.
+   ─────────────────────────────────────────── */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-deck {
+    position: static !important;
+  }
+
+  .print-slide {
+    display: flex !important;
+    page-break-after: always;
+    break-after: page;
+    width: 100%;
+    height: 100vh;
+    box-shadow: none !important;
+  }
+
+  .print-slide:last-child {
+    page-break-after: auto;
+  }
+}
