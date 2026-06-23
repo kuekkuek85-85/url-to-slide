@@ -41,7 +41,7 @@ npm run dev                  # http://localhost:3000
 |---|---|
 | `GEMINI_API_KEY` | Gemini 키. 없으면 샘플 분석으로 폴백 |
 | `GEMINI_MODEL` | 기본 `gemini-2.5-flash` |
-| `CAPTURE_MODE` | `screenshot-api`(기본·권장) · `chromium` · `mock` |
+| `CAPTURE_MODE` | `chromium`(기본) · `screenshot-api` · `mock` |
 | `SCREENSHOT_API_URL` | (선택) 스크린샷 API 폴백 엔드포인트 |
 | `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` | Firebase Admin 인증 |
 | `FIREBASE_STORAGE_BUCKET` | 캡처 이미지 업로드 버킷 |
@@ -51,9 +51,9 @@ npm run dev                  # http://localhost:3000
 
 ## 캡처 모드 (PRD §4)
 
-- **기본 `screenshot-api`(권장)**: 외부 스크린샷 API(기본 Microlink 무료 티어, `SCREENSHOT_API_URL` 로 교체 가능) 호출. 번들 문제 0, 안정성↑. 실패 시 `mock` 으로 폴백.
-- **`chromium`**: `@sparticuz/chromium` + `playwright-core` 자체 캡처. 다단계 인터랙션(입력·버튼 클릭) 캡처가 필요할 때. API Route 는 Node.js 런타임(`runtime = "nodejs"`), `maxDuration = 60`. 실패 시 screenshot-api → mock 으로 폴백.
-- **`mock`**: 브라우저·키 없이 파이프라인만 검증(자리표시 이미지).
+- **기본 `chromium`**: `@sparticuz/chromium` + `playwright-core`. API Route 는 Node.js 런타임(`runtime = "nodejs"`), `maxDuration = 60`.
+- 번들/타임아웃 이슈가 크면 `CAPTURE_MODE=screenshot-api` (Microlink 등) 로 폴백.
+- 로컬에서 브라우저 없이 파이프라인만 보려면 `CAPTURE_MODE=mock`.
 
 `next.config.mjs` 에서 `@sparticuz/chromium`·`playwright-core` 를 서버 외부 패키지로 지정해 번들 손상을 막습니다.
 

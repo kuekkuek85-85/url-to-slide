@@ -184,31 +184,29 @@ async function chromiumCapture(url: string): Promise<CaptureResult> {
 
 /** 모드에 따라 캡처를 수행하고, 실패 시 단계적으로 폴백한다. */
 export async function captureSite(url: string): Promise<CaptureResult> {
-  const mode = (process.env.CAPTURE_MODE || "screenshot-api").toLowerCase();
+  const mode = (process.env.CAPTURE_MODE || "chromium").toLowerCase();
 
   if (mode === "mock") return mockCapture(url);
-
-  if (mode === "chromium") {
-    // chromium → 실패 시 screenshot-api → 실패 시 mock
+  if (mode === "screenshot-api") {
     try {
-      return await chromiumCapture(url);
+      return await screenshotApiCapture(url);
     } catch (err) {
-      try {
-        const r = await screenshotApiCapture(url);
-        return { ...r, warning: `Chromium 실패로 스크린샷 API 폴백: ${(err as Error).message}` };
-      } catch (err2) {
-        return {
-          ...mockCapture(url),
-          warning: `캡처 실패(Chromium·API 모두) → mock: ${(err2 as Error).message}`,
-        };
-      }
+      return { ...mockCapture(url), warning: `스크린샷 API 실패 → mock: ${(err as Error).message}` };
     }
   }
 
-  // 기본: screenshot-api → 실패 시 mock
+  // 기본: chromium → 실패 시 screenshot-api → 실패 시 mock
   try {
-    return await screenshotApiCapture(url);
+    return await chromiumCapture(url);
   } catch (err) {
-    return { ...mockCapture(url), warning: `스크린샷 API 실패 → mock: ${(err as Error).message}` };
+    try {
+      const r = await screenshotApiCapture(url);
+      return { ...r, warning: `Chromium 실패로 스크린샷 API 폴백: ${(err as Error).message}` };
+    } catch (err2) {
+      return {
+        ...mockCapture(url),
+        warning: `캡처 실패(Chromium·API 모두) → mock: ${(err2 as Error).message}`,
+      };
+    }
   }
 }
