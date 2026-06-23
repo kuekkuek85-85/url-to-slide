@@ -75,8 +75,10 @@ npm run dev                  # http://localhost:3000
 
 ## 배포 (Vercel)
 
+전체 절차·환경변수·트러블슈팅은 **[DEPLOY.md](./DEPLOY.md)** 참고.
+
 1. 저장소를 Vercel 에 연결
-2. 환경변수 등록 (위 표)
+2. 환경변수 등록 (위 표 / DEPLOY.md)
 3. Functions 메모리 1024MB+ 권장 (`/api/generate` 는 `maxDuration = 60`)
 
 ## 보안 / 개인정보 (PRD §10)
