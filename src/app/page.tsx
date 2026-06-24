@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { GenerateResponse } from "@/lib/types";
+import { setDraft } from "@/lib/handoff";
 
 const STEPS = ["URL 확인 중", "화면 캡처 중", "AI 분석 중", "원고 정리 중"];
 
@@ -32,8 +33,8 @@ export default function HomePage() {
       const data = (await res.json()) as GenerateResponse & { error?: string };
       if (!res.ok) throw new Error(data.error || "생성에 실패했습니다.");
 
-      // 검토 화면으로 결과 전달 (sessionStorage)
-      sessionStorage.setItem("t2s:draft", JSON.stringify(data));
+      // 검토 화면으로 결과 전달 (메모리 우선 + sessionStorage 보조)
+      setDraft(data);
       router.push("/review");
     } catch (err) {
       setError((err as Error).message);

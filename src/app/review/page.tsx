@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import type { Deck, GenerateResponse, Shot, AudiencePreset } from "@/lib/types";
+import type { Deck, Shot, AudiencePreset } from "@/lib/types";
+import { getDraft, setDeck as setHandoffDeck, clearDraft } from "@/lib/handoff";
 
 const AUDIENCES: { key: AudiencePreset; label: string; hint: string }[] = [
   { key: "peer", label: "동료교사", hint: "교수학습 가치 중심" },
@@ -21,12 +22,11 @@ export default function ReviewPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("t2s:draft");
-    if (!raw) {
+    const data = getDraft();
+    if (!data) {
       router.replace("/");
       return;
     }
-    const data = JSON.parse(raw) as GenerateResponse;
     setDeck(data.deck);
     setShots(data.shots ?? []);
     const w: string[] = [];
@@ -94,13 +94,10 @@ export default function ReviewPage() {
   function publish() {
     if (!deck) return;
     setError(null);
-    try {
-      // 서버/DB 저장 없이 브라우저(sessionStorage)에 보관 → 휘발성 슬라이드 뷰어로 이동.
-      sessionStorage.setItem("t2s:deck", JSON.stringify(deck));
-      router.push("/view");
-    } catch (err) {
-      setError((err as Error).message);
-    }
+    // 서버/DB 저장 없이 메모리(+가능하면 sessionStorage)에 보관 → 휘발성 뷰어로 이동.
+    setHandoffDeck(deck);
+    clearDraft();
+    router.push("/view");
   }
 
   return (

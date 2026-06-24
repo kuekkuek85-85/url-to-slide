@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SlideDeck from "@/components/SlideDeck";
 import type { Deck } from "@/lib/types";
+import { getDeck as getHandoffDeck } from "@/lib/handoff";
 
 // 휘발성 뷰어: 서버/DB 저장 없이 브라우저(sessionStorage)의 deck 을 바로 보여준다.
 // 새로고침으로 sessionStorage 가 남아 있으면 유지되고, 탭을 닫으면 사라진다.
@@ -13,16 +14,12 @@ export default function ViewPage() {
   const [deck, setDeck] = useState<Deck | null>(null);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("t2s:deck");
-    if (!raw) {
+    const d = getHandoffDeck();
+    if (!d) {
       router.replace("/");
       return;
     }
-    try {
-      setDeck(JSON.parse(raw) as Deck);
-    } catch {
-      router.replace("/");
-    }
+    setDeck(d);
   }, [router]);
 
   if (!deck) {
