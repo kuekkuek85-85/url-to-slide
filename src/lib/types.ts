@@ -74,4 +74,5 @@ export interface GenerateResponse {
   shots: Shot[];
   capture: { mode: string; pageTitle: string; warning?: string };
   analysis: { mode: "gemini" | "stub"; warning?: string };
+  images: { mode: "gemini-image" | "none"; warning?: string };
 }

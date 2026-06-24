@@ -40,6 +40,7 @@ export default function ReviewPage() {
     }
     if (data.capture?.warning) w.push(data.capture.warning);
     if (data.analysis?.warning) w.push(data.analysis.warning);
+    if (data.images?.warning) w.push(data.images.warning);
     if (data.analysis?.mode === "stub")
       w.push("AI 분석이 샘플로 대체되었습니다. 원고를 직접 검토·수정하세요.");
     setWarnings(w);
@@ -221,16 +222,34 @@ export default function ReviewPage() {
               className="rounded-2xl border border-white/10 p-4"
               style={{ borderLeftColor: sec.accent, borderLeftWidth: 4 }}
             >
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-semibold" style={{ color: sec.accent }}>
-                  {sec.label}
-                </h3>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  {sec.img ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={sec.img}
+                      alt={`${sec.label} 이미지`}
+                      className="h-12 w-20 rounded-md border border-white/10 object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="h-12 w-20 rounded-md border border-white/10"
+                      style={{ background: sec.accent, opacity: 0.25 }}
+                    />
+                  )}
+                  <h3 className="font-semibold" style={{ color: sec.accent }}>
+                    {sec.label}
+                  </h3>
+                </div>
                 <select
                   value={sec.img ?? ""}
                   onChange={(e) => assignImg(si, e.target.value || null)}
                   className="rounded-lg border border-white/15 bg-[#0b1020] px-2 py-1 text-xs"
                 >
-                  <option value="">캡처 없음</option>
+                  {sec.img && !shots.some((s) => s.src === sec.img) && (
+                    <option value={sec.img}>생성된 이미지</option>
+                  )}
+                  <option value="">이미지 없음</option>
                   {shots.map((s, i) => (
                     <option key={i} value={s.src}>
                       {s.label} #{i + 1}

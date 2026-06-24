@@ -128,3 +128,111 @@ export async function analyzeCapture(capture: CaptureResult): Promise<AnalyzeOut
     }
   }
 }
+
+// ───────────────────────────────────────────────────────────
+// 섹션 이미지 생성 (Gemini 이미지 모델)
+// 메인 페이지는 실제 스크린샷, 나머지 섹션은 내용에 맞는 일러스트를 생성한다.
+// ───────────────────────────────────────────────────────────
+
+const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image";
+
+export interface SectionImageInput {
+  key: string;
+  label: string;
+  accent: string;
+  theme: string;
+  bullets: string[];
+}
+
+export interface ImageGenOutput {
+  images: Record<string, string | null>; // key → data URL
+  mode: "gemini-image" | "none";
+  warning?: string;
+}
+
+function imagePrompt(appName: string, s: SectionImageInput): string {
+  const ctx = s.bullets.slice(0, 4).join("; ");
+  return [
+    `한국 교실 수업평가 웹 도구 "${appName}" 소개 슬라이드용 일러스트레이션.`,
+    `주제: ${s.label} — ${s.theme}.`,
+    ctx ? `참고 내용: ${ctx}.` : "",
+    `스타일: 모던 플랫 벡터 일러스트, 깔끔하고 미니멀, ${s.accent} 계열 색을 중심으로 한 부드러운 배색,`,
+    `어두운 남색(#0b1020) 배경과 잘 어울리는 톤, 16:9 가로 구도, 여백 충분히.`,
+    `매우 중요: 그림 안에 글자/문자/숫자/단어/로고를 절대 넣지 마세요 (no text, no words, no letters, no numbers).`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+async function generateOneImage(apiKey: string, prompt: string): Promise<string | null> {
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${IMAGE_MODEL}:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseModalities: ["IMAGE"] },
+      }),
+    }
+  );
+  if (!res.ok) throw new Error(`이미지 생성 오류 ${res.status}`);
+  const json: any = await res.json();
+  const parts = json?.candidates?.[0]?.content?.parts ?? [];
+  for (const p of parts) {
+    if (p?.inlineData?.data) {
+      const mime = p.inlineData.mimeType || "image/png";
+      return `data:${mime};base64,${p.inlineData.data}`;
+    }
+  }
+  return null;
+}
+
+/**
+ * 각 섹션에 맞는 이미지를 병렬 생성한다.
+ * 키가 없거나 전부 실패하면 mode: "none" 으로 폴백(섹션은 색상 블록으로 렌더).
+ */
+export async function generateSectionImages(
+  appName: string,
+  sections: SectionImageInput[]
+): Promise<ImageGenOutput> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  const empty: Record<string, string | null> = {};
+  sections.forEach((s) => (empty[s.key] = null));
+
+  if (!apiKey) {
+    return {
+      images: empty,
+      mode: "none",
+      warning: "GEMINI_API_KEY 가 없어 섹션 이미지를 생성하지 않았습니다.",
+    };
+  }
+
+  const results = await Promise.all(
+    sections.map(async (s) => {
+      try {
+        return [s.key, await generateOneImage(apiKey, imagePrompt(appName, s))] as const;
+      } catch {
+        return [s.key, null] as const;
+      }
+    })
+  );
+
+  const images: Record<string, string | null> = {};
+  let ok = 0;
+  for (const [k, v] of results) {
+    images[k] = v;
+    if (v) ok++;
+  }
+
+  return {
+    images,
+    mode: ok > 0 ? "gemini-image" : "none",
+    warning:
+      ok === 0
+        ? "섹션 이미지 생성에 실패했습니다(색상 블록으로 표시)."
+        : ok < sections.length
+        ? `일부 섹션 이미지 생성 실패 (${ok}/${sections.length}).`
+        : undefined,
+  };
+}

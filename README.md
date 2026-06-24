@@ -12,17 +12,18 @@
 ## 스택
 
 - **Next.js (App Router)** on Vercel — 호스팅 + 생성 API + 슬라이드 페이지
-- **Playwright (`playwright-core` + `@sparticuz/chromium`)** — 서버리스 headless 캡처
-- **Gemini** — 캡처 + 텍스트 멀티모달 분석 → 4카테고리 원고 JSON
-- **클라이언트 휘발성 저장** — sessionStorage (DB·서버 저장 없음)
+- **Playwright (`playwright-core` + `@sparticuz/chromium`)** — 메인 페이지 1컷 캡처
+- **Gemini** — 멀티모달 분석(원고 JSON) + 섹션 일러스트 이미지 생성
+- **클라이언트 휘발성 저장** — sessionStorage/메모리 (DB·서버 저장 없음)
 
 ## 동작 흐름
 
 ```
 홈(/)  ── URL 입력 ──▶  POST /api/generate
-                          1) Playwright 캡처 (랜딩 + 인터랙션 + 결과)
+                          1) 메인 페이지 1컷 캡처 (Playwright/스크린샷)
                           2) Gemini 분석 → 4카테고리 JSON
-                          3) deck JSON 매핑(accent/img 부착)
+                          3) Gemini 이미지 모델 → 섹션별 일러스트 생성(병렬)
+                          4) deck JSON 매핑(표지=스크린샷, 섹션=생성 이미지)
         ◀── deck + shots ──┘  (sessionStorage: t2s:draft)
 검토(/review) ── 교사 편집 ──▶ (sessionStorage: t2s:deck)
                                        │
@@ -45,8 +46,9 @@ npm run dev                  # http://localhost:3000
 
 | 변수 | 설명 |
 |---|---|
-| `GEMINI_API_KEY` | Gemini 키. 없으면 샘플 분석으로 폴백 |
-| `GEMINI_MODEL` | 기본 `gemini-2.5-flash` |
+| `GEMINI_API_KEY` | Gemini 키. 없으면 샘플 분석 + 섹션 이미지 미생성 |
+| `GEMINI_MODEL` | 분석 모델. 기본 `gemini-2.5-flash` |
+| `GEMINI_IMAGE_MODEL` | 이미지 생성 모델. 기본 `gemini-2.5-flash-image` |
 | `CAPTURE_MODE` | `chromium`(기본) · `screenshot-api` · `mock` |
 | `SCREENSHOT_API_URL` | (선택) 스크린샷 API 폴백 엔드포인트 |
 

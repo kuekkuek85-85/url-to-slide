@@ -6,7 +6,7 @@ import Link from "next/link";
 import type { GenerateResponse } from "@/lib/types";
 import { setDraft } from "@/lib/handoff";
 
-const STEPS = ["URL 확인 중", "화면 캡처 중", "AI 분석 중", "원고 정리 중"];
+const STEPS = ["URL 확인 중", "메인 화면 캡처 중", "AI 분석 중", "슬라이드 이미지 생성 중"];
 
 export default function HomePage() {
   const router = useRouter();

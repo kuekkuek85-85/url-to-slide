@@ -85,7 +85,6 @@ async function chromiumCapture(url: string): Promise<CaptureResult> {
     headless: true,
   });
 
-  const TARGET_SHOTS = 3;
   const shots: Shot[] = [];
   const notes: string[] = [];
   let pageTitle = url;
@@ -105,102 +104,18 @@ async function chromiumCapture(url: string): Promise<CaptureResult> {
 
     pageTitle = (await page.title()) || url;
 
-    // 동일 화면 중복 방지를 위한 간이 서명 집합.
-    const sigs = new Set<string>();
-    const grab = async (label: string, title?: string): Promise<boolean> => {
-      try {
-        const buf = await page.screenshot({ type: "jpeg", quality: 70, fullPage: false });
-        const sig = `${buf.length}:${buf.subarray(0, 1024).toString("base64")}`;
-        if (sigs.has(sig)) return false; // 직전과 같은 화면 → 스킵
-        sigs.add(sig);
-        const bodyText = (await page
-          .evaluate(() => document.body?.innerText || "")
-          .catch(() => "")) as string;
-        shots.push({
-          label,
-          src: `data:image/jpeg;base64,${buf.toString("base64")}`,
-          title: title ?? pageTitle,
-          text: bodyText.replace(/\s+/g, " ").trim().slice(0, 2000),
-        });
-        return true;
-      } catch {
-        return false;
-      }
-    };
-
-    // 보이고 활성화된 클릭 대상 중, 키워드 우선 → 없으면 첫 후보를 클릭한다.
-    const clickStep = async (keywords: string[]): Promise<boolean> => {
-      const clickable = page.locator(
-        'button, a[role="button"], [role="button"], input[type="submit"], input[type="button"], a[href]'
-      );
-      const n = Math.min(await clickable.count().catch(() => 0), 40);
-      const candidates: number[] = [];
-      let keywordHit = -1;
-      for (let i = 0; i < n; i++) {
-        const el = clickable.nth(i);
-        if (!(await el.isVisible().catch(() => false))) continue;
-        if (!(await el.isEnabled().catch(() => false))) continue;
-        candidates.push(i);
-        if (keywordHit === -1) {
-          const txt = ((await el.innerText().catch(() => "")) || "").toLowerCase();
-          if (keywords.some((k) => txt.includes(k.toLowerCase()))) keywordHit = i;
-        }
-      }
-      const target = keywordHit !== -1 ? keywordHit : candidates[0];
-      if (target === undefined) return false;
-      await clickable.nth(target).click({ timeout: 4000 }).catch(() => {});
-      await page.waitForTimeout(1800);
-      return true;
-    };
-
-    // 1) 랜딩
+    // 메인 페이지 1컷만 캡처한다. 나머지 섹션 이미지는 Gemini 가 생성한다.
     await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
-    await grab("landing", pageTitle);
-
-    // 2) 입력창 더미 입력 (PRD §5, §10 — 실제 학생데이터 금지)
-    const inputs = page.locator(
-      'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]), textarea'
-    );
-    const inputCount = await inputs.count().catch(() => 0);
-    let filled = 0;
-    for (let i = 0; i < Math.min(inputCount, 6); i++) {
-      const el = inputs.nth(i);
-      if (!(await el.isVisible().catch(() => false))) continue;
-      const type = (await el.getAttribute("type").catch(() => "")) || "text";
-      const value = type === "number" || type === "tel" ? "10" : "샘플";
-      if (await el.fill(value).then(() => true).catch(() => false)) filled++;
-    }
-    if (filled > 0) notes.push(`입력칸 ${filled}곳에 더미값 입력`);
-
-    // 3) 인터랙션 화면 (시작/제출/평가류 버튼)
-    const startKeywords = ["시작", "제출", "평가", "다음", "확인", "응답", "참여", "start", "submit", "begin", "next", "go"];
-    if (await clickStep(startKeywords)) {
-      await grab("interaction", "인터랙션 화면");
-    }
-
-    // 4) 결과/피드백 화면 (한 단계 더 진행)
-    const resultKeywords = ["결과", "제출", "완료", "확인", "다음", "보기", "result", "done", "finish", "submit"];
-    if (shots.length < TARGET_SHOTS && (await clickStep(resultKeywords))) {
-      await grab("result", "결과/피드백 화면");
-    }
-
-    // 5) 보완: 인터랙션 전환이 적어 3컷을 못 채웠으면 스크롤 위치 컷으로 채운다.
-    if (shots.length < TARGET_SHOTS) {
-      const positions = [0.5, 1.0];
-      for (const p of positions) {
-        if (shots.length >= TARGET_SHOTS) break;
-        await page
-          .evaluate((r) => window.scrollTo(0, document.body.scrollHeight * r), p)
-          .catch(() => {});
-        await page.waitForTimeout(700);
-        await grab(`scroll-${Math.round(p * 100)}`, "추가 화면");
-      }
-      if (shots.length < TARGET_SHOTS) {
-        notes.push("화면 전환이 적어 캡처 수가 목표보다 적습니다(편집에서 이미지 업로드 가능).");
-      } else {
-        notes.push("인터랙션 전환이 적어 일부는 스크롤 화면으로 보완했습니다.");
-      }
-    }
+    const buf = await page.screenshot({ type: "jpeg", quality: 72, fullPage: false });
+    const bodyText = (await page
+      .evaluate(() => document.body?.innerText || "")
+      .catch(() => "")) as string;
+    shots.push({
+      label: "landing",
+      src: `data:image/jpeg;base64,${buf.toString("base64")}`,
+      title: pageTitle,
+      text: bodyText.replace(/\s+/g, " ").trim().slice(0, 2500),
+    });
   } catch (err) {
     notes.push(`캡처 일부 실패: ${(err as Error).message}`);
   } finally {
