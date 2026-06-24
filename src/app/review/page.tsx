@@ -17,7 +17,6 @@ export default function ReviewPage() {
   const [shots, setShots] = useState<Shot[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [audience, setAudience] = useState<AudiencePreset>("peer");
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -92,24 +91,15 @@ export default function ReviewPage() {
     });
   };
 
-  async function publish() {
+  function publish() {
     if (!deck) return;
-    setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/decks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ deck, sourceUrl: deck.url, audience }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "게시에 실패했습니다.");
-      sessionStorage.removeItem("t2s:draft");
-      router.push(`/deck/${data.id}`);
+      // 서버/DB 저장 없이 브라우저(sessionStorage)에 보관 → 휘발성 슬라이드 뷰어로 이동.
+      sessionStorage.setItem("t2s:deck", JSON.stringify(deck));
+      router.push("/view");
     } catch (err) {
       setError((err as Error).message);
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -119,7 +109,7 @@ export default function ReviewPage() {
         <div>
           <h1 className="text-2xl font-bold">검토 · 편집</h1>
           <p className="text-sm text-white/50">
-            AI 초안을 확인하고 다듬으세요. 확정하면 슬라이드가 게시됩니다.
+            AI 초안을 확인하고 다듬으세요. 완료하면 슬라이드를 보고 PDF로 저장할 수 있습니다.
           </p>
         </div>
         <Link href="/" className="text-sm text-white/50 hover:text-white">
@@ -288,10 +278,9 @@ export default function ReviewPage() {
         </Link>
         <button
           onClick={publish}
-          disabled={saving}
           className="rounded-xl bg-indigo-500 px-6 py-2.5 font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
         >
-          {saving ? "게시 중…" : "확정하고 게시 →"}
+          슬라이드 보기 →
         </button>
       </div>
     </main>

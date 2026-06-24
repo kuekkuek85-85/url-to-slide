@@ -2,9 +2,7 @@ import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import SlideDeck from "@/components/SlideDeck";
 import ShareBar from "@/components/ShareBar";
-import { getDeck } from "@/lib/store";
 import { SAMPLE_DECK } from "@/lib/sample";
-import type { Deck } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -15,24 +13,17 @@ function baseUrl(): string {
   return `${proto}://${host}`;
 }
 
-export default async function DeckPage({ params }: { params: { id: string } }) {
-  let deck: Deck | null = null;
+// DB/서버 저장 없는 휘발성 구조에서, 이 라우트는 고정 데모 슬라이드만 제공한다.
+// 사용자가 생성한 슬라이드는 /view (브라우저 sessionStorage) 에서 본다.
+export default function DeckPage({ params }: { params: { id: string } }) {
+  if (params.id !== "demo") notFound();
 
-  if (params.id === "demo") {
-    deck = SAMPLE_DECK;
-  } else {
-    const doc = await getDeck(params.id);
-    deck = doc?.deck ?? null;
-  }
-
-  if (!deck) notFound();
-
-  const shareUrl = `${baseUrl()}/deck/${params.id}`;
+  const shareUrl = `${baseUrl()}/deck/demo`;
 
   return (
     <>
       <ShareBar shareUrl={shareUrl} />
-      <SlideDeck deck={deck} />
+      <SlideDeck deck={SAMPLE_DECK} />
     </>
   );
 }

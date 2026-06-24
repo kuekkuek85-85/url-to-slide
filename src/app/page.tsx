@@ -110,9 +110,6 @@ export default function HomePage() {
         <Link href="/deck/demo" className="hover:text-white">
           데모 슬라이드 보기 →
         </Link>
-        <Link href="/decks" className="hover:text-white">
-          내 슬라이드
-        </Link>
       </div>
 
       <p className="mt-12 max-w-xl text-center text-xs text-white/30">
