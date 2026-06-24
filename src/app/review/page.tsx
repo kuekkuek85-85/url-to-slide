@@ -30,6 +30,14 @@ export default function ReviewPage() {
     setDeck(data.deck);
     setShots(data.shots ?? []);
     const w: string[] = [];
+    const cmode = data.capture?.mode;
+    if (cmode && cmode !== "chromium") {
+      w.push(
+        `캡처 모드가 '${cmode}' 입니다 — 이 경우 보통 1컷만 생성됩니다. ` +
+          `클릭·입력 다단계(최대 3컷) 캡처는 chromium 모드에서 동작합니다. ` +
+          `(Vercel 환경변수 CAPTURE_MODE=chromium 확인, 또는 chromium 실행 실패로 폴백된 것일 수 있습니다.)`
+      );
+    }
     if (data.capture?.warning) w.push(data.capture.warning);
     if (data.analysis?.warning) w.push(data.analysis.warning);
     if (data.analysis?.mode === "stub")
