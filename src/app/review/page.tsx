@@ -49,7 +49,7 @@ export default function ReviewPage() {
 
   if (!deck) {
     return (
-      <main className="flex min-h-[100dvh] items-center justify-center text-white/60">
+      <main className="flex min-h-[100dvh] items-center justify-center text-[#a3678a]">
         불러오는 중…
       </main>
     );
@@ -111,21 +111,21 @@ export default function ReviewPage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-5 py-10">
+    <main className="font-cute mx-auto max-w-6xl px-5 py-10 text-[#5b2a45]">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">검토 · 편집</h1>
-          <p className="text-sm text-white/50">
+          <p className="text-sm text-[#a3678a]">
             AI 초안을 확인하고 다듬으세요. 완료하면 슬라이드를 보고 PDF로 저장할 수 있습니다.
           </p>
         </div>
-        <Link href="/" className="text-sm text-white/50 hover:text-white">
+        <Link href="/" className="text-sm text-[#a3678a] hover:text-[#ff5fa2]">
           ← 처음으로
         </Link>
       </div>
 
       {warnings.length > 0 && (
-        <div className="mb-6 space-y-1 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+        <div className="mb-6 space-y-1 rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           {warnings.map((w, i) => (
             <p key={i}>⚠️ {w}</p>
           ))}
@@ -139,7 +139,7 @@ export default function ReviewPage() {
             <h2 className="font-semibold">캡처 ({shots.length})</h2>
             <button
               onClick={() => fileRef.current?.click()}
-              className="rounded-lg border border-white/15 px-3 py-1 text-xs hover:bg-white/10"
+              className="rounded-lg border border-[#ffc1de] px-3 py-1 text-xs hover:bg-[#fff0f5]"
             >
               + 업로드
             </button>
@@ -152,14 +152,14 @@ export default function ReviewPage() {
             />
           </div>
           {shots.length === 0 && (
-            <p className="text-sm text-white/40">캡처가 없습니다. 이미지를 업로드하세요.</p>
+            <p className="text-sm text-[#b58aa3]">캡처가 없습니다. 이미지를 업로드하세요.</p>
           )}
           {shots.map((s, i) => (
-            <div key={i} className="overflow-hidden rounded-xl border border-white/10 bg-white/5">
+            <div key={i} className="overflow-hidden rounded-xl border border-[#ffd6e8] bg-white">
               <img src={s.src} alt={s.label} className="aspect-video w-full object-cover" />
               <div className="flex items-center justify-between px-3 py-2 text-xs">
-                <span className="text-white/50">{s.label}</span>
-                <button onClick={() => removeShot(s.src)} className="text-red-300 hover:text-red-200">
+                <span className="text-[#a3678a]">{s.label}</span>
+                <button onClick={() => removeShot(s.src)} className="text-red-500 hover:text-red-600">
                   삭제
                 </button>
               </div>
@@ -171,7 +171,7 @@ export default function ReviewPage() {
         <section className="space-y-6">
           {/* 청중 프리셋 */}
           <div>
-            <label className="mb-2 block text-sm text-white/60">청중 톤 (프리셋)</label>
+            <label className="mb-2 block text-sm text-[#a3678a]">청중 톤 (프리셋)</label>
             <div className="flex flex-wrap gap-2">
               {AUDIENCES.map((a) => (
                 <button
@@ -179,8 +179,8 @@ export default function ReviewPage() {
                   onClick={() => setAudience(a.key)}
                   className={`rounded-full px-4 py-1.5 text-sm transition ${
                     audience === a.key
-                      ? "bg-indigo-500 text-white"
-                      : "border border-white/15 text-white/70 hover:bg-white/10"
+                      ? "bg-[#ff5fa2] text-white"
+                      : "border border-[#ffc1de] text-[#6b3a57] hover:bg-[#fff0f5]"
                   }`}
                   title={a.hint}
                 >
@@ -192,35 +192,35 @@ export default function ReviewPage() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm text-white/60">앱 이름</label>
+              <label className="mb-1 block text-sm text-[#a3678a]">앱 이름</label>
               <input
                 value={deck.appName}
                 onChange={(e) => update((d) => ((d.appName = e.target.value), d))}
-                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 outline-none focus:border-indigo-400"
+                className="w-full rounded-lg border border-[#ffc1de] bg-white px-3 py-2 outline-none focus:border-[#ff5fa2]"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-white/60">URL</label>
+              <label className="mb-1 block text-sm text-[#a3678a]">URL</label>
               <input
                 value={deck.url}
                 onChange={(e) => update((d) => ((d.url = e.target.value), d))}
-                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 outline-none focus:border-indigo-400"
+                className="w-full rounded-lg border border-[#ffc1de] bg-white px-3 py-2 outline-none focus:border-[#ff5fa2]"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm text-white/60">한 줄 소개</label>
+            <label className="mb-1 block text-sm text-[#a3678a]">한 줄 소개</label>
             <input
               value={deck.oneLiner}
               onChange={(e) => update((d) => ((d.oneLiner = e.target.value), d))}
-              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 outline-none focus:border-indigo-400"
+              className="w-full rounded-lg border border-[#ffc1de] bg-white px-3 py-2 outline-none focus:border-[#ff5fa2]"
             />
           </div>
 
           {deck.sections.map((sec, si) => (
             <div
               key={sec.key}
-              className="rounded-2xl border border-white/10 p-4"
+              className="rounded-2xl border border-[#ffd6e8] p-4"
               style={{ borderLeftColor: sec.accent, borderLeftWidth: 4 }}
             >
               <div className="mb-3 flex items-center justify-between gap-3">
@@ -230,11 +230,11 @@ export default function ReviewPage() {
                     <img
                       src={sec.img}
                       alt={`${sec.label} 이미지`}
-                      className="h-12 w-20 rounded-md border border-white/10 object-cover"
+                      className="h-12 w-20 rounded-md border border-[#ffd6e8] object-cover"
                     />
                   ) : (
                     <div
-                      className="h-12 w-20 rounded-md border border-white/10"
+                      className="h-12 w-20 rounded-md border border-[#ffd6e8]"
                       style={{ background: sec.accent, opacity: 0.25 }}
                     />
                   )}
@@ -245,7 +245,7 @@ export default function ReviewPage() {
                 <select
                   value={sec.img ?? ""}
                   onChange={(e) => assignImg(si, e.target.value || null)}
-                  className="rounded-lg border border-white/15 bg-[#0b1020] px-2 py-1 text-xs"
+                  className="rounded-lg border border-[#ffc1de] bg-white px-2 py-1 text-xs"
                 >
                   {sec.img && !shots.some((s) => s.src === sec.img) && (
                     <option value={sec.img}>생성된 이미지</option>
@@ -265,11 +265,11 @@ export default function ReviewPage() {
                       value={b}
                       rows={1}
                       onChange={(e) => setBullet(si, bi, e.target.value)}
-                      className="min-h-[38px] flex-1 resize-y rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm outline-none focus:border-indigo-400"
+                      className="min-h-[38px] flex-1 resize-y rounded-lg border border-[#ffc1de] bg-white px-3 py-2 text-sm outline-none focus:border-[#ff5fa2]"
                     />
                     <button
                       onClick={() => removeBullet(si, bi)}
-                      className="mt-1 px-2 text-white/40 hover:text-red-300"
+                      className="mt-1 px-2 text-[#b58aa3] hover:text-red-300"
                       aria-label="삭제"
                     >
                       ✕
@@ -278,7 +278,7 @@ export default function ReviewPage() {
                 ))}
                 <button
                   onClick={() => addBullet(si)}
-                  className="text-sm text-white/50 hover:text-white"
+                  className="text-sm text-[#a3678a] hover:text-[#ff5fa2]"
                 >
                   + 항목 추가
                 </button>
@@ -289,23 +289,23 @@ export default function ReviewPage() {
       </div>
 
       {error && (
-        <div className="mt-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <div className="mt-6 rounded-xl border-2 border-[#ffb3c8] bg-[#fff0f5] px-4 py-3 text-sm text-[#c2406a]">
           {error}
         </div>
       )}
 
-      <div className="sticky bottom-0 mt-8 flex justify-end gap-3 border-t border-white/10 bg-[#0b1020]/90 py-4 backdrop-blur">
+      <div className="sticky bottom-0 mt-8 flex justify-end gap-3 border-t border-[#ffd6e8] bg-white/90 py-4 backdrop-blur">
         <Link
           href="/"
-          className="rounded-xl border border-white/15 px-5 py-2.5 text-sm hover:bg-white/10"
+          className="rounded-xl border border-[#ffc1de] px-5 py-2.5 text-sm hover:bg-[#fff0f5]"
         >
           취소
         </Link>
         <button
           onClick={publish}
-          className="rounded-xl bg-indigo-500 px-6 py-2.5 font-semibold text-white hover:bg-indigo-400 disabled:opacity-50"
+          className="rounded-full bg-[#ff5fa2] px-7 py-2.5 font-bold text-white shadow-[0_8px_20px_rgba(255,95,162,0.45)] hover:brightness-105 disabled:opacity-50"
         >
-          슬라이드 보기 →
+          ✨ 슬라이드 보기 →
         </button>
       </div>
     </main>
