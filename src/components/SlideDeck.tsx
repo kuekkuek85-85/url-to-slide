@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Deck } from "@/lib/types";
 
 interface SlideDeckProps {
@@ -112,8 +112,10 @@ export default function SlideDeck({ deck }: SlideDeckProps) {
       />
 
       {/* 현재 슬라이드 (화면 표시용) */}
-      <div className="no-print relative z-10 flex min-h-[100dvh] items-center justify-center px-6 py-16 md:px-16">
-        <SlideView slide={slides[current]} deck={deck} />
+      <div className="no-print relative z-10 flex min-h-[100dvh] items-center justify-center px-6 py-16 md:px-12">
+        <SlideFrame accent={accent}>
+          <SlideView slide={slides[current]} deck={deck} />
+        </SlideFrame>
       </div>
 
       {/* 발표 자막 */}
@@ -169,10 +171,12 @@ export default function SlideDeck({ deck }: SlideDeckProps) {
         {slides.map((s, i) => (
           <div
             key={i}
-            className="print-slide hidden items-center justify-center px-16"
+            className="print-slide hidden items-center justify-center p-10"
             style={{ background: LOVELY_BG, color: "#5b2a45" }}
           >
-            <SlideView slide={s} deck={deck} />
+            <SlideFrame accent="#ff5fa2">
+              <SlideView slide={s} deck={deck} />
+            </SlideFrame>
           </div>
         ))}
       </div>
@@ -207,6 +211,23 @@ function Sparkles() {
           </span>
         </span>
       ))}
+    </div>
+  );
+}
+
+/* 슬라이드 콘텐츠를 감싸는 카드 프레임 (배경과 구분되는 둥근 사각형) */
+function SlideFrame({ accent, children }: { accent: string; children: ReactNode }) {
+  return (
+    <div
+      className="relative flex w-full max-w-6xl items-center justify-center rounded-[2.25rem] border-2 border-white bg-white/65 px-6 py-12 shadow-[0_24px_70px_rgba(255,143,199,0.35)] backdrop-blur-sm md:min-h-[74vh] md:px-14"
+      style={{ boxShadow: `0 24px 70px ${accent}40, inset 0 0 0 6px #ffffffcc` }}
+    >
+      {/* 상단 강조 바 */}
+      <div
+        className="absolute left-1/2 top-0 h-1.5 w-28 -translate-x-1/2 rounded-b-full"
+        style={{ background: accent }}
+      />
+      <div className="w-full">{children}</div>
     </div>
   );
 }
