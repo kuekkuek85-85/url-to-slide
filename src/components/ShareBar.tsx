@@ -19,31 +19,31 @@ export default function ShareBar({ shareUrl }: { shareUrl: string }) {
   };
 
   return (
-    <div className="no-print fixed right-4 top-4 z-40 flex items-center gap-2">
+    <div className="no-print font-cute fixed right-4 top-4 z-40 flex items-center gap-2">
       <Link
         href="/"
-        className="rounded-lg border border-white/15 bg-black/30 px-3 py-1.5 text-sm text-white/80 backdrop-blur hover:bg-white/10"
+        className="rounded-full border-2 border-white bg-white/80 px-4 py-1.5 text-sm text-[#c06aa0] shadow backdrop-blur hover:bg-white"
       >
         홈
       </Link>
       <button
         onClick={copy}
-        className="rounded-lg border border-white/15 bg-black/30 px-3 py-1.5 text-sm text-white/80 backdrop-blur hover:bg-white/10"
+        className="rounded-full border-2 border-white bg-white/80 px-4 py-1.5 text-sm text-[#c06aa0] shadow backdrop-blur hover:bg-white"
       >
         {copied ? "복사됨!" : "링크 복사"}
       </button>
       <button
         onClick={() => setShowQr((v) => !v)}
-        className="rounded-lg border border-white/15 bg-black/30 px-3 py-1.5 text-sm text-white/80 backdrop-blur hover:bg-white/10"
+        className="rounded-full border-2 border-white bg-white/80 px-4 py-1.5 text-sm text-[#c06aa0] shadow backdrop-blur hover:bg-white"
       >
         QR
       </button>
       <button
         onClick={() => window.print()}
-        className="rounded-lg border border-white/15 bg-black/30 px-3 py-1.5 text-sm text-white/80 backdrop-blur hover:bg-white/10"
+        className="rounded-full bg-[#ff5fa2] px-4 py-1.5 text-sm font-bold text-white shadow-[0_6px_18px_rgba(255,95,162,0.5)] hover:brightness-105"
         title="브라우저 인쇄로 PDF 저장 (Ctrl/⌘+P)"
       >
-        PDF 저장
+        ✨ PDF 저장
       </button>
 
       {showQr && (

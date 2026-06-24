@@ -5,28 +5,28 @@ export const SECTION_DEFS = [
   {
     key: "functional" as const,
     label: "기능적 특징",
-    accent: "#3b82f6", // 파랑
+    accent: "#ff5fa2", // 러블리 핑크
     field: "functional" as const,
     theme: "핵심 기능과 인터랙션(입력, 버튼, 결과 표시)을 상징하는 추상적 장면",
   },
   {
     key: "educational" as const,
     label: "교육적 특징",
-    accent: "#10b981", // 초록
+    accent: "#9b6dff", // 라벤더 퍼플
     field: "educational" as const,
     theme: "교육적 가치(형성평가, 피드백, 능동적 학습)를 상징하는 장면",
   },
   {
     key: "effects" as const,
     label: "기대효과",
-    accent: "#f59e0b", // 주황
+    accent: "#ff9f43", // 살구/피치
     field: "expectedEffects" as const,
     theme: "학습과 운영의 긍정적 기대효과(성장, 향상, 성취)를 상징하는 장면",
   },
   {
     key: "suggestions" as const,
     label: "제안 · 개선점",
-    accent: "#8b5cf6", // 보라
+    accent: "#1fc8a9", // 민트
     field: "suggestions" as const,
     theme: "개선과 확장 아이디어(접근성, 데이터 활용, 발전 방향)를 상징하는 장면",
   },

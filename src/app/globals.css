@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0b1020;
-  --fg: #e9ecf5;
+  --bg: #fff5fa;
+  --fg: #5b2a45;
 }
 
 html,
@@ -17,6 +17,73 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+/* 아기자기·러블리 테마 유틸 */
+.font-cute {
+  font-family: var(--font-cute), system-ui, sans-serif;
+}
+.font-hand {
+  font-family: var(--font-hand), var(--font-cute), system-ui, sans-serif;
+}
+
+/* 반짝이는 장식 애니메이션 */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(4deg);
+  }
+}
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+.animate-twinkle {
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+.animate-floaty {
+  animation: floaty 5s ease-in-out infinite;
+}
+.bling-text {
+  background: linear-gradient(
+    100deg,
+    #ff8ec7,
+    #c79bff,
+    #ffd36e,
+    #7ee8c9,
+    #ff8ec7
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-twinkle,
+  .animate-floaty,
+  .bling-text {
+    animation: none;
+  }
 }
 
 /* ───────────────────────────────────────────

@@ -51,7 +51,7 @@ export const SAMPLE_DECK: Deck = {
     {
       key: "functional",
       label: "기능적 특징",
-      accent: "#3b82f6",
+      accent: "#ff5fa2",
       img: null,
       bullets: SAMPLE_ANALYSIS.functional,
       script:
@@ -60,7 +60,7 @@ export const SAMPLE_DECK: Deck = {
     {
       key: "educational",
       label: "교육적 특징",
-      accent: "#10b981",
+      accent: "#9b6dff",
       img: null,
       bullets: SAMPLE_ANALYSIS.educational,
       script:
@@ -69,7 +69,7 @@ export const SAMPLE_DECK: Deck = {
     {
       key: "effects",
       label: "기대효과",
-      accent: "#f59e0b",
+      accent: "#ff9f43",
       img: null,
       bullets: SAMPLE_ANALYSIS.expectedEffects,
       script:
@@ -78,7 +78,7 @@ export const SAMPLE_DECK: Deck = {
     {
       key: "suggestions",
       label: "제안 · 개선점",
-      accent: "#8b5cf6",
+      accent: "#1fc8a9",
       img: null,
       bullets: SAMPLE_ANALYSIS.suggestions,
       script:
