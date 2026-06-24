@@ -21,7 +21,19 @@ export default function SlideDeck({ deck }: SlideDeckProps) {
   }, [deck]);
 
   const [current, setCurrent] = useState(0);
+  const [showCaption, setShowCaption] = useState(true);
   const total = slides.length;
+
+  const scriptFor = (slide: Slide): string => {
+    if (slide.kind === "title") return deck.titleScript ?? "";
+    if (slide.kind === "outro") return deck.outroScript ?? "";
+    return deck.sections[slide.index].script ?? "";
+  };
+  const currentScript = scriptFor(slides[current]);
+  const hasAnyScript =
+    !!deck.titleScript ||
+    !!deck.outroScript ||
+    deck.sections.some((s) => !!s.script);
 
   const go = useCallback(
     (n: number) => setCurrent((c) => Math.max(0, Math.min(total - 1, n))),
@@ -40,6 +52,8 @@ export default function SlideDeck({ deck }: SlideDeckProps) {
         go(0);
       } else if (e.key === "End") {
         go(total - 1);
+      } else if (e.key === "c" || e.key === "C" || e.key === "ㅊ") {
+        setShowCaption((v) => !v);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -78,6 +92,18 @@ export default function SlideDeck({ deck }: SlideDeckProps) {
         <SlideView slide={slides[current]} deck={deck} />
       </div>
 
+      {/* 발표 자막 (현재 슬라이드 대본) */}
+      {showCaption && currentScript && (
+        <div className="no-print pointer-events-none fixed bottom-16 left-1/2 z-30 w-[min(92vw,52rem)] -translate-x-1/2 px-2">
+          <p
+            className="rounded-2xl bg-black/65 px-6 py-4 text-center text-base leading-relaxed text-white shadow-2xl backdrop-blur md:text-xl"
+            style={{ borderBottom: `3px solid ${accent}` }}
+          >
+            {currentScript}
+          </p>
+        </div>
+      )}
+
       {/* 하단 도트 내비 + 페이지 카운터 (PRD §6.2) */}
       <div className="no-print fixed bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3">
         <div className="flex gap-2">
@@ -97,6 +123,19 @@ export default function SlideDeck({ deck }: SlideDeckProps) {
         <span className="ml-2 text-sm tabular-nums text-white/50">
           {current + 1} / {total}
         </span>
+        {hasAnyScript && (
+          <button
+            onClick={() => setShowCaption((v) => !v)}
+            className={`ml-1 rounded-full border px-3 py-1 text-xs transition ${
+              showCaption
+                ? "border-white/30 bg-white/15 text-white"
+                : "border-white/15 text-white/50 hover:bg-white/10"
+            }`}
+            title="발표 자막 켜기/끄기 (C)"
+          >
+            자막 {showCaption ? "ON" : "OFF"}
+          </button>
+        )}
       </div>
 
       {/* 인쇄(PDF 저장)용 — 모든 슬라이드를 페이지 분할로 렌더 (PRD §6.2) */}

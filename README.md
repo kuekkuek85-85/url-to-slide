@@ -22,8 +22,8 @@
 홈(/)  ── URL 입력 ──▶  POST /api/generate
                           1) 메인 페이지 1컷 캡처 (Playwright/스크린샷)
                           2) Gemini 분석 → 4카테고리 JSON
-                          3) Gemini 이미지 모델 → 섹션별 일러스트 생성(병렬)
-                          4) deck JSON 매핑(표지=스크린샷, 섹션=생성 이미지)
+                          3) Gemini → 섹션 일러스트 + 발표 자막(3분 이내) 생성(병렬)
+                          4) deck JSON 매핑(표지=스크린샷, 섹션=생성 이미지, 자막 부착)
         ◀── deck + shots ──┘  (sessionStorage: t2s:draft)
 검토(/review) ── 교사 편집 ──▶ (sessionStorage: t2s:deck)
                                        │
@@ -73,8 +73,9 @@ npm run dev                  # http://localhost:3000
 
 ## 슬라이드 조작
 
-- 키보드: ←/→ · Space · Home/End
+- 키보드: ←/→ · Space · Home/End · `C`(자막 켜기/끄기)
 - 마우스: 화면 좌/우 클릭, 하단 도트
+- 발표 자막: 슬라이드별 대본(3분 이내)이 하단에 자막처럼 표시, 하단 "자막 ON/OFF" 토글
 - PDF 저장: 우상단 "PDF로 저장" 또는 Ctrl/⌘+P (`@media print` 로 슬라이드별 페이지 분할)
 
 ## 배포 (Vercel)

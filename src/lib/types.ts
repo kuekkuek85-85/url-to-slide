@@ -19,6 +19,8 @@ export interface DeckSection {
   accent: string;
   img: string | null;
   bullets: string[];
+  /** 발표 자막(이 슬라이드 대본) */
+  script?: string;
 }
 
 /** 슬라이드 사이트에 주입되는 deck JSON (PRD §6.3) */
@@ -28,6 +30,20 @@ export interface Deck {
   oneLiner: string;
   thumbnail?: string | null;
   sections: DeckSection[];
+  /** 표지 슬라이드 발표 자막 */
+  titleScript?: string;
+  /** 마무리 슬라이드 발표 자막 */
+  outroScript?: string;
+}
+
+/** 발표 대본 (슬라이드별, 3분 이내) */
+export interface Narration {
+  title: string;
+  functional: string;
+  educational: string;
+  effects: string;
+  suggestions: string;
+  outro: string;
 }
 
 /** Playwright(또는 폴백)로 캡처한 한 컷 */
@@ -75,4 +91,5 @@ export interface GenerateResponse {
   capture: { mode: string; pageTitle: string; warning?: string };
   analysis: { mode: "gemini" | "stub"; warning?: string };
   images: { mode: "gemini-image" | "none"; warning?: string };
+  narration: { warning?: string };
 }

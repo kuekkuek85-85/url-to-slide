@@ -43,6 +43,10 @@ export const SAMPLE_DECK: Deck = {
   url: "https://prehistory-quiz.lovable.app/",
   oneLiner: SAMPLE_ANALYSIS.oneLiner,
   thumbnail: null,
+  titleScript:
+    "안녕하세요. 오늘은 제가 수업에 활용해 본 ‘오개념 찾기 — 선사시대’라는 형성평가 도구를 소개해 드리겠습니다. 학생들이 직접 숨은 오개념을 찾아내는 점이 인상적이었어요.",
+  outroScript:
+    "이렇게 ‘오개념 찾기’는 학생의 능동적 사고와 즉각적인 교정을 함께 잡아 주는 도구였습니다. AI가 만든 초안을 교사가 검토해 완성했으니, 우리 반에 맞게 조금만 다듬어 활용하시면 좋겠습니다. 감사합니다.",
   sections: [
     {
       key: "functional",
@@ -50,6 +54,8 @@ export const SAMPLE_DECK: Deck = {
       accent: "#3b82f6",
       img: null,
       bullets: SAMPLE_ANALYSIS.functional,
+      script:
+        "먼저 기능을 보면, 학번과 이름만으로 간편하게 들어가 시대별 색상 카드로 진술을 분류하고, 숨은 오개념 다섯 개를 클릭으로 찾습니다. 찾은 개수와 걸린 시간이 실시간으로 표시돼 몰입도가 높습니다.",
     },
     {
       key: "educational",
@@ -57,6 +63,8 @@ export const SAMPLE_DECK: Deck = {
       accent: "#10b981",
       img: null,
       bullets: SAMPLE_ANALYSIS.educational,
+      script:
+        "교육적으로는 ‘오류 찾기’ 방식이라 학생이 스스로 비판적으로 따져 보게 됩니다. 틀린 부분엔 바로 서술형 피드백이 주어지고, 재도전이 가능해 메타인지를 자연스럽게 키워 줍니다.",
     },
     {
       key: "effects",
@@ -64,6 +72,8 @@ export const SAMPLE_DECK: Deck = {
       accent: "#f59e0b",
       img: null,
       bullets: SAMPLE_ANALYSIS.expectedEffects,
+      script:
+        "그래서 기대효과로는, 핵심 오개념을 그 자리에서 바로잡고 학급 전체의 오개념 분포까지 파악할 수 있습니다. 학생 흥미는 올라가고, 교사의 채점·해설 부담은 줄어듭니다.",
     },
     {
       key: "suggestions",
@@ -71,6 +81,8 @@ export const SAMPLE_DECK: Deck = {
       accent: "#8b5cf6",
       img: null,
       bullets: SAMPLE_ANALYSIS.suggestions,
+      script:
+        "끝으로 제안입니다. 문항별 집계를 보여 주는 교사 대시보드와 세특 연계, 진술 셔플, 그리고 키보드·스크린리더 같은 접근성 보완이 더해진다면 활용도가 한층 높아질 것 같습니다.",
     },
   ],
 };

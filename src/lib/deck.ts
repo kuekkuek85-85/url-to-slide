@@ -1,4 +1,4 @@
-import type { Deck, DeckSection, GeminiAnalysis, Shot } from "./types";
+import type { Deck, DeckSection, GeminiAnalysis, Narration, Shot } from "./types";
 
 // 섹션 정의 (PRD §6.2) — accent 색상 + 분석 필드 + 이미지 생성용 주제.
 export const SECTION_DEFS = [
@@ -52,9 +52,11 @@ export function buildDeck(
   analysis: GeminiAnalysis,
   url: string,
   shots: Shot[],
-  generated?: Record<string, string | null>
+  generated?: Record<string, string | null>,
+  narration?: Narration | null
 ): Deck {
   const g = generated ?? {};
+  const n = narration ?? null;
 
   const sections: DeckSection[] = SECTION_DEFS.map((d) => ({
     key: d.key,
@@ -62,6 +64,7 @@ export function buildDeck(
     accent: d.accent,
     img: g[d.key] ?? null,
     bullets: (analysis[d.field] as string[]) ?? [],
+    script: n ? (n[d.key] as string) || undefined : undefined,
   }));
 
   return {
@@ -70,6 +73,8 @@ export function buildDeck(
     oneLiner: analysis.oneLiner || "",
     thumbnail: shots[0]?.src ?? null,
     sections,
+    titleScript: n?.title || undefined,
+    outroScript: n?.outro || undefined,
   };
 }
 

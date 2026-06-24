@@ -41,6 +41,7 @@ export default function ReviewPage() {
     if (data.capture?.warning) w.push(data.capture.warning);
     if (data.analysis?.warning) w.push(data.analysis.warning);
     if (data.images?.warning) w.push(data.images.warning);
+    if (data.narration?.warning) w.push(data.narration.warning);
     if (data.analysis?.mode === "stub")
       w.push("AI 분석이 샘플로 대체되었습니다. 원고를 직접 검토·수정하세요.");
     setWarnings(w);

@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import type { CaptureResult, GeminiAnalysis } from "./types";
+import type { CaptureResult, GeminiAnalysis, Narration } from "./types";
 import { SAMPLE_ANALYSIS } from "./sample";
 
 const SYSTEM_INSTRUCTION = `당신은 한국 교실의 수업평가 웹 도구를 분석해 소개 슬라이드 원고를 만드는 전문가입니다.
@@ -125,6 +125,81 @@ export async function analyzeCapture(capture: CaptureResult): Promise<AnalyzeOut
           (err2 as Error).message
         }`,
       };
+    }
+  }
+}
+
+// ───────────────────────────────────────────────────────────
+// 발표 자막(대본) 생성 — 슬라이드별, 전체 3분 이내
+// ───────────────────────────────────────────────────────────
+
+const NARRATION_SYSTEM = `당신은 교사가 동료·학부모에게 수업평가 웹 도구를 소개하는 "3분 이내" 발표의 대본 작가입니다.
+규칙:
+- 친근한 구어체로, 청중에게 직접 말하듯 자연스럽게 씁니다.
+- 각 슬라이드 대본은 2~3문장, 슬라이드당 약 25초 분량으로 짧게 합니다.
+- 슬라이드 사이를 자연스럽게 잇는 짧은 전환 표현을 활용하되 과장·추측은 금지합니다.
+- 제공된 분석 근거 범위 안에서만 말합니다.
+- 출력은 아래 JSON "만" 반환합니다. 마크다운/코드펜스/설명을 넣지 마세요.
+스키마: {"title":"...","functional":"...","educational":"...","effects":"...","suggestions":"...","outro":"..."}`;
+
+function coerceNarration(obj: any): Narration {
+  const str = (v: any) => (typeof v === "string" ? v.trim() : "");
+  return {
+    title: str(obj.title),
+    functional: str(obj.functional),
+    educational: str(obj.educational),
+    effects: str(obj.effects),
+    suggestions: str(obj.suggestions),
+    outro: str(obj.outro),
+  };
+}
+
+export interface NarrationOutput {
+  narration: Narration | null;
+  warning?: string;
+}
+
+export async function generateNarration(
+  analysis: GeminiAnalysis,
+  url: string
+): Promise<NarrationOutput> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return { narration: null, warning: "GEMINI_API_KEY 가 없어 발표 자막을 생성하지 않았습니다." };
+  }
+
+  const context = JSON.stringify({
+    appName: analysis.appName,
+    oneLiner: analysis.oneLiner,
+    url,
+    functional: analysis.functional,
+    educational: analysis.educational,
+    expectedEffects: analysis.expectedEffects,
+    suggestions: analysis.suggestions,
+  });
+
+  async function callOnce(): Promise<Narration> {
+    const genAI = new GoogleGenerativeAI(apiKey!);
+    const model = genAI.getGenerativeModel({
+      model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      systemInstruction: NARRATION_SYSTEM,
+      generationConfig: { temperature: 0.7, responseMimeType: "application/json" },
+    });
+    const result = await model.generateContent([
+      {
+        text: `다음 분석으로 발표 대본 JSON 을 작성하세요. 6개 슬라이드(표지·기능·교육·기대효과·제안·마무리) 전체 합쳐 3분 이내로.\n${context}`,
+      },
+    ]);
+    return coerceNarration(JSON.parse(extractJson(result.response.text())));
+  }
+
+  try {
+    return { narration: await callOnce() };
+  } catch {
+    try {
+      return { narration: await callOnce() };
+    } catch (e) {
+      return { narration: null, warning: `발표 자막 생성 실패: ${(e as Error).message}` };
     }
   }
 }

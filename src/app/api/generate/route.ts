@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { captureSite } from "@/lib/capture";
-import { analyzeCapture, generateSectionImages } from "@/lib/gemini";
+import { analyzeCapture, generateSectionImages, generateNarration } from "@/lib/gemini";
 import { buildDeck, sectionImageInputs } from "@/lib/deck";
 import { normalizeUrl } from "@/lib/url";
 import type { GenerateResponse } from "@/lib/types";
@@ -33,12 +33,14 @@ export async function POST(req: NextRequest) {
     const { analysis, mode: analysisMode, warning: analysisWarning } =
       await analyzeCapture(capture);
 
-    // 3) 섹션별 이미지 생성 (Gemini 이미지 모델, 병렬). 메인 페이지는 스크린샷.
-    const { images, mode: imageMode, warning: imageWarning } =
-      await generateSectionImages(analysis.appName, sectionImageInputs(analysis));
+    // 3) 섹션 이미지 + 발표 자막 생성 (모두 Gemini, 병렬)
+    const [imgOut, narrOut] = await Promise.all([
+      generateSectionImages(analysis.appName, sectionImageInputs(analysis)),
+      generateNarration(analysis, url),
+    ]);
 
-    // 4) deck JSON 매핑 (스크린샷=표지, 생성 이미지=섹션)
-    const deck = buildDeck(analysis, url, capture.shots, images);
+    // 4) deck JSON 매핑 (스크린샷=표지, 생성 이미지=섹션, 자막 부착)
+    const deck = buildDeck(analysis, url, capture.shots, imgOut.images, narrOut.narration);
 
     const payload: GenerateResponse = {
       deck,
@@ -49,7 +51,8 @@ export async function POST(req: NextRequest) {
         warning: capture.warning,
       },
       analysis: { mode: analysisMode, warning: analysisWarning },
-      images: { mode: imageMode, warning: imageWarning },
+      images: { mode: imgOut.mode, warning: imgOut.warning },
+      narration: { warning: narrOut.warning },
     };
     return NextResponse.json(payload);
   } catch (err) {
