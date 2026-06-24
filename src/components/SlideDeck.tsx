@@ -52,7 +52,7 @@ export default function SlideDeck({ deck }: SlideDeckProps) {
       : "#6366f1";
 
   return (
-    <div className="relative min-h-[100dvh] w-full overflow-hidden bg-[#0b1020] text-[#e9ecf5]">
+    <div className="slide-root relative min-h-[100dvh] w-full overflow-hidden bg-[#0b1020] text-[#e9ecf5]">
       {/* 진행바 (PRD §6.2) */}
       <div className="no-print fixed left-0 top-0 z-30 h-1 w-full bg-white/10">
         <div

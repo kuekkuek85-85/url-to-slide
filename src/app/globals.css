@@ -37,8 +37,18 @@ body {
     display: none !important;
   }
 
+  /* 화면용 루트의 overflow/높이 제한이 인쇄 페이지를 자르지 않도록 해제 */
+  .slide-root {
+    overflow: visible !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  /* 숨겨둔 인쇄용 컨테이너를 보이게 (부모를 켜야 자식 슬라이드가 나온다) */
   .print-deck {
+    display: block !important;
     position: static !important;
+    overflow: visible !important;
   }
 
   .print-slide {
@@ -47,7 +57,10 @@ body {
     break-after: page;
     width: 100%;
     height: 100vh;
+    overflow: hidden;
     box-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .print-slide:last-child {

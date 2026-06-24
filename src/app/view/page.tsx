@@ -39,12 +39,6 @@ export default function ViewPage() {
         >
           홈
         </Link>
-        <Link
-          href="/review"
-          className="rounded-lg border border-white/15 bg-black/30 px-3 py-1.5 text-sm text-white/80 backdrop-blur hover:bg-white/10"
-        >
-          편집으로
-        </Link>
         <button
           onClick={() => window.print()}
           className="rounded-lg bg-indigo-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-400"
